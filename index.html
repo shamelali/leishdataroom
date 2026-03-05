@@ -1,0 +1,496 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Leish — Investor Data Room</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;1,400&family=DM+Mono:wght@300;400;500&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    :root {
+      --ink: #1a1410; --paper: #f5f0e8; --cream: #ede7d5;
+      --accent: #c94a1a; --gold: #b8860b; --muted: #8a7e6e;
+      --green: #4a7c59; --card-bg: rgba(255,255,255,0.55); --border: rgba(26,20,16,0.10);
+      --nav-bg: rgba(245,240,232,0.92); --conf-bg: #ede7d5; --shadow: rgba(201,74,26,0.10);
+      --doc-hover-bg: white;
+    }
+    html[data-theme="dark"] {
+      --ink: #f0e8dc; --paper: #1a1612; --cream: #231e19;
+      --card-bg: rgba(255,255,255,0.05); --border: rgba(240,232,220,0.10);
+      --nav-bg: rgba(20,17,14,0.95); --conf-bg: #231e19; --muted: #9a8e7e;
+      --shadow: rgba(201,74,26,0.20); --doc-hover-bg: #2a2420;
+    }
+    html { scroll-behavior: smooth; }
+
+    /* Dark mode toggle button */
+    .theme-btn {
+      background: none; border: 1px solid var(--border); border-radius: 20px;
+      padding: 5px 12px; cursor: pointer; font-family: 'DM Mono', monospace;
+      font-size: 10px; letter-spacing: 0.12em; color: var(--muted);
+      display: flex; align-items: center; gap: 6px; transition: all 0.2s;
+      white-space: nowrap; flex-shrink: 0;
+    }
+    .theme-btn:hover { border-color: var(--accent); color: var(--accent); }
+    .theme-btn .theme-icon { font-size: 13px; line-height: 1; }
+    body {
+      font-family: 'DM Mono', monospace; background: var(--paper); color: var(--ink);
+      background-image: radial-gradient(ellipse at 15% 10%, rgba(201,74,26,0.07) 0%, transparent 55%), radial-gradient(ellipse at 85% 85%, rgba(184,134,11,0.06) 0%, transparent 55%);
+      transition: background 0.3s, color 0.3s;
+    }
+    .conf-banner {
+      text-align: center; padding: 10px; background: var(--conf-bg);
+      border-bottom: 1px solid var(--border); font-size: 10px;
+      letter-spacing: 0.15em; text-transform: uppercase; color: var(--muted);
+    }
+    nav {
+      position: sticky; top: 0; z-index: 100;
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 16px 40px; background: var(--nav-bg);
+      backdrop-filter: blur(12px); border-bottom: 1px solid var(--border);
+      gap: 16px;
+    }
+    .nav-brand { font-family: 'Playfair Display', serif; font-size: 22px; font-weight: 700; letter-spacing: -0.02em; }
+    .nav-brand span { color: var(--accent); font-style: italic; }
+    .nav-links { display: flex; gap: 24px; list-style: none; }
+    .nav-links a { font-size: 10px; letter-spacing: 0.18em; text-transform: uppercase; color: var(--muted); text-decoration: none; transition: color 0.2s; }
+    .nav-links a:hover { color: var(--accent); }
+    .nav-badge { font-size: 9px; letter-spacing: 0.15em; text-transform: uppercase; padding: 4px 10px; border: 1px solid var(--border); border-radius: 2px; color: var(--muted); }
+    .hero { max-width: 900px; margin: 0 auto; padding: 80px 40px 60px; border-bottom: 1px solid var(--border); }
+    .eyebrow { font-size: 10px; letter-spacing: 0.28em; text-transform: uppercase; color: var(--muted); margin-bottom: 18px; }
+    h1 { font-family: 'Playfair Display', serif; font-size: clamp(48px, 8vw, 80px); font-weight: 700; line-height: 0.95; letter-spacing: -0.03em; margin-bottom: 24px; }
+    h1 em { color: var(--accent); font-style: italic; }
+    .hero-sub { font-size: 13px; color: var(--muted); line-height: 1.7; max-width: 560px; margin-bottom: 36px; }
+    .hero-stats { display: grid; grid-template-columns: repeat(4, 1fr); gap: 1px; border: 1px solid var(--border); border-radius: 2px; overflow: hidden; max-width: 680px; }
+    .stat { padding: 20px 24px; background: var(--card-bg); }
+    .stat-val { font-family: 'Playfair Display', serif; font-size: 26px; font-weight: 700; line-height: 1; }
+    .stat-label { font-size: 10px; letter-spacing: 0.1em; text-transform: uppercase; color: var(--muted); margin-top: 6px; }
+    .sw { max-width: 900px; margin: 0 auto; padding: 64px 40px; border-bottom: 1px solid var(--border); }
+    .sw:last-of-type { border-bottom: none; }
+    .slabel { font-size: 10px; letter-spacing: 0.28em; text-transform: uppercase; color: var(--accent); margin-bottom: 8px; }
+    h2 { font-family: 'Playfair Display', serif; font-size: clamp(22px, 4vw, 34px); font-weight: 700; letter-spacing: -0.02em; margin-bottom: 32px; line-height: 1.1; }
+    .cards { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 1px; border: 1px solid var(--border); border-radius: 2px; overflow: hidden; }
+    .card { padding: 26px 26px; background: var(--card-bg); }
+    .card-icon { font-size: 22px; margin-bottom: 12px; }
+    .card-title { font-family: 'Playfair Display', serif; font-size: 15px; font-weight: 700; margin-bottom: 8px; }
+    .card-body { font-size: 12px; color: var(--muted); line-height: 1.65; }
+    .two-col { display: grid; grid-template-columns: 1fr 1fr; gap: 32px; }
+    .tag { display: inline-block; font-size: 9px; letter-spacing: 0.12em; text-transform: uppercase; padding: 2px 7px; border-radius: 2px; font-weight: 500; }
+    .tag-red { background: rgba(201,74,26,0.12); color: var(--accent); }
+    .tag-gold { background: rgba(184,134,11,0.12); color: var(--gold); }
+    .tag-green { background: rgba(74,124,89,0.12); color: var(--green); }
+    .tag-muted { background: rgba(138,126,110,0.1); color: var(--muted); }
+    .compare-table { width: 100%; border-collapse: collapse; font-size: 12px; }
+    .compare-table th { font-size: 9px; letter-spacing: 0.14em; text-transform: uppercase; color: var(--muted); padding: 12px 14px; text-align: center; border-bottom: 1px solid var(--border); font-weight: 500; }
+    .compare-table th:first-child { text-align: left; }
+    .compare-table td { padding: 11px 14px; text-align: center; border-bottom: 1px solid var(--border); font-size: 12px; }
+    .compare-table td:first-child { text-align: left; }
+    .compare-table tbody tr:last-child td { border-bottom: none; }
+    .compare-table tbody { background: var(--card-bg); }
+    .leish-col { background: rgba(201,74,26,0.05); }
+    .check { color: var(--green); } .cross { color: var(--muted); opacity: 0.35; } .partial { color: var(--gold); }
+    .timeline { position: relative; padding-left: 24px; }
+    .timeline::before { content: ''; position: absolute; left: 0; top: 8px; bottom: 8px; width: 1px; background: linear-gradient(to bottom, var(--accent), var(--gold), transparent); }
+    .tl-item { position: relative; margin-bottom: 30px; }
+    .tl-item::before { content: ''; position: absolute; left: -28px; top: 6px; width: 8px; height: 8px; border-radius: 50%; background: var(--accent); border: 2px solid var(--paper); box-shadow: 0 0 0 1px var(--accent); }
+    .tl-phase { font-size: 9px; letter-spacing: 0.18em; text-transform: uppercase; color: var(--accent); margin-bottom: 4px; }
+    .tl-title { font-family: 'Playfair Display', serif; font-size: 17px; font-weight: 700; margin-bottom: 7px; }
+    .tl-body { font-size: 12px; color: var(--muted); line-height: 1.65; }
+    .mrow { display: flex; gap: 1px; border: 1px solid var(--border); border-radius: 2px; overflow: hidden; margin-bottom: 1px; }
+    .mrow:last-child { margin-bottom: 0; }
+    .mn { flex: 1; padding: 13px 18px; background: var(--card-bg); font-size: 12px; }
+    .mc { width: 100px; padding: 13px 14px; background: var(--card-bg); font-size: 12px; text-align: center; }
+    .mc-hi { color: var(--accent); font-weight: 500; }
+    .mhead { display: flex; gap: 1px; margin-bottom: 4px; }
+    .mhn { flex: 1; font-size: 9px; letter-spacing: 0.18em; text-transform: uppercase; color: var(--muted); padding: 0 18px 8px; }
+    .mhc { width: 100px; font-size: 9px; letter-spacing: 0.15em; text-transform: uppercase; color: var(--muted); padding: 0 14px 8px; text-align: center; }
+    .funds-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 1px; border: 1px solid var(--border); border-radius: 2px; overflow: hidden; }
+    .fund-item { padding: 22px 22px; background: var(--card-bg); }
+    .fund-pct { font-family: 'Playfair Display', serif; font-size: 32px; font-weight: 700; line-height: 1; margin-bottom: 6px; }
+    .fund-label { font-size: 11px; color: var(--muted); line-height: 1.4; }
+    .fund-bar { height: 3px; border-radius: 2px; margin-top: 10px; }
+    .data-table { width: 100%; border-collapse: collapse; font-size: 12px; }
+    .data-table th { text-align: left; font-size: 9px; letter-spacing: 0.18em; text-transform: uppercase; color: var(--muted); padding: 10px 16px; border-bottom: 1px solid var(--border); font-weight: 500; }
+    .data-table td { padding: 13px 16px; border-bottom: 1px solid var(--border); vertical-align: top; line-height: 1.5; }
+    .data-table tr:last-child td { border-bottom: none; }
+    .data-table tbody { background: var(--card-bg); }
+    .docs-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 12px; }
+    .doc-card { display: flex; align-items: center; gap: 16px; padding: 18px 20px; border: 1px solid var(--border); border-radius: 2px; background: var(--card-bg); cursor: pointer; transition: all 0.2s; text-decoration: none; color: var(--ink); }
+    .doc-card:hover { border-color: var(--accent); background: var(--doc-hover-bg); transform: translateY(-2px); box-shadow: 0 6px 20px var(--shadow); }
+    .doc-icon { font-size: 24px; flex-shrink: 0; }
+    .doc-title { font-size: 13px; font-weight: 500; margin-bottom: 3px; }
+    .doc-meta { font-size: 10px; color: var(--muted); letter-spacing: 0.07em; }
+    .contact-block { border: 1px solid var(--border); border-radius: 2px; padding: 48px; background: var(--card-bg); text-align: center; }
+    .contact-block h3 { font-family: 'Playfair Display', serif; font-size: 26px; font-weight: 700; margin-bottom: 10px; }
+    .contact-block p { font-size: 12px; color: var(--muted); margin-bottom: 28px; line-height: 1.6; }
+    .cta-btn { display: inline-block; padding: 14px 32px; background: var(--ink); color: var(--paper); font-family: 'Playfair Display', serif; font-size: 16px; font-style: italic; border-radius: 2px; text-decoration: none; transition: all 0.3s; }
+    .cta-btn:hover { background: var(--accent); transform: translateY(-2px); box-shadow: 0 8px 24px rgba(201,74,26,0.25); }
+    footer { max-width: 900px; margin: 0 auto; padding: 28px 40px; display: flex; align-items: center; justify-content: space-between; font-size: 10px; color: var(--muted); letter-spacing: 0.1em; }
+    @keyframes fadeUp { from { opacity: 0; transform: translateY(18px); } to { opacity: 1; transform: translateY(0); } }
+    .hero { animation: fadeUp 0.7s ease both; }
+    .sw { animation: fadeUp 0.6s ease both; }
+    @media (max-width: 680px) {
+      nav { padding: 14px 20px; } .nav-links { display: none; }
+      .hero, .sw { padding-left: 20px; padding-right: 20px; }
+      .hero-stats, .funds-grid { grid-template-columns: 1fr 1fr; }
+      .two-col { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+
+<div class="conf-banner">Confidential · For Investor Use Only · Leish Beauty Marketplace · 2025</div>
+
+<nav>
+  <div class="nav-brand">Leish <span>.</span></div>
+  <ul class="nav-links">
+    <li><a href="#overview">Overview</a></li>
+    <li><a href="#market">Market</a></li>
+    <li><a href="#model">Model</a></li>
+    <li><a href="#gtm">Strategy</a></li>
+    <li><a href="#traction">Traction</a></li>
+    <li><a href="#ask">The Ask</a></li>
+    <li><a href="#docs">Docs</a></li>
+  </ul>
+  <div style="display:flex;align-items:center;gap:10px;">
+    <button class="theme-btn" id="themeToggle" onclick="toggleTheme()">
+      <span class="theme-icon" id="themeIcon">🌙</span>
+      <span id="themeLabel">Dark</span>
+    </button>
+    <span class="nav-badge">Seed Round · 2025</span>
+  </div>
+</nav>
+
+<!-- HERO -->
+<section class="hero" id="overview">
+  <p class="eyebrow">Investor Data Room</p>
+  <h1>The beauty<br>marketplace<br>built for <em>clients.</em></h1>
+  <p class="hero-sub">Leish connects clients with makeup artists through portfolio-first discovery, instant booking, and built-in business tools — the first platform designed from the client's perspective in a $200B+ market.</p>
+  <div class="hero-stats">
+    <div class="stat">
+      <div class="stat-val">$200B+</div>
+      <div class="stat-label">Global market size</div>
+    </div>
+    <div class="stat">
+      <div class="stat-val">3</div>
+      <div class="stat-label">Major competitors outpositioned</div>
+    </div>
+    <div class="stat">
+      <div class="stat-val">Seed</div>
+      <div class="stat-label">Current stage</div>
+    </div>
+    <div class="stat">
+      <div class="stat-val">&lt;$500</div>
+      <div class="stat-label">Initial marketing budget</div>
+    </div>
+  </div>
+</section>
+
+<!-- PROBLEM & SOLUTION -->
+<section class="sw" id="market">
+  <p class="slabel">01 — Problem & Solution</p>
+  <h2>A broken discovery experience.</h2>
+  <div class="cards">
+    <div class="card">
+      <div class="card-icon">😩</div>
+      <div class="card-title">The Problem</div>
+      <div class="card-body">Clients find makeup artists through Instagram DMs, blurry portfolio screenshots, and word-of-mouth. No trusted, centralized platform exists for the client's discovery journey. Guesswork leads to bad bookings and wasted money.</div>
+    </div>
+    <div class="card">
+      <div class="card-icon">✨</div>
+      <div class="card-title">The Solution</div>
+      <div class="card-body">Leish is a portfolio-first marketplace where clients browse verified MUA work, read real reviews, and book instantly — no DMs, no guesswork. MUAs get a professional presence and business analytics. Both sides win.</div>
+    </div>
+    <div class="card">
+      <div class="card-icon">🎯</div>
+      <div class="card-title">Why Now</div>
+      <div class="card-body">GRWM content is exploding on TikTok. The freelance beauty economy grew post-pandemic. Every major competitor (StyleSeat, Booksy, GlossGenius) focuses on professionals — the client side remains completely wide open.</div>
+    </div>
+  </div>
+</section>
+
+<!-- MARKET -->
+<section class="sw">
+  <p class="slabel">02 — Market Opportunity</p>
+  <h2>Massive market, underserved entry point.</h2>
+  <div class="two-col">
+    <div class="cards" style="grid-template-columns:1fr; align-content:start;">
+      <div class="card">
+        <div class="card-icon">🌍</div>
+        <div class="card-title">Total Addressable Market</div>
+        <div class="card-body">The global beauty services market exceeds <strong>$200 billion</strong> and is growing year-on-year, driven by a surge in freelance beauty professionals and demand for personalized services.</div>
+      </div>
+      <div class="card">
+        <div class="card-icon">💄</div>
+        <div class="card-title">Blue Ocean Positioning</div>
+        <div class="card-body">No major competitor dominates TikTok beauty discovery as a booking platform. "MUA near me for [occasion]" is high-intent search with weak marketplace competition. Leish can be first.</div>
+      </div>
+      <div class="card">
+        <div class="card-icon">📈</div>
+        <div class="card-title">Growth Trends</div>
+        <div class="card-body">GRWM content exploding on TikTok & Instagram Reels. Consumers increasingly trust portfolio-based hiring. Micro-occasion bookings (graduations, content shoots, birthdays) rising fast.</div>
+      </div>
+    </div>
+    <div>
+      <p style="font-size:10px;letter-spacing:.18em;text-transform:uppercase;color:var(--muted);margin-bottom:14px;">Competitive Landscape</p>
+      <div style="border:1px solid var(--border);border-radius:2px;overflow:hidden;">
+        <table class="compare-table">
+          <thead>
+            <tr>
+              <th>Feature</th>
+              <th>StyleSeat</th>
+              <th>Booksy</th>
+              <th class="leish-col" style="color:var(--accent)">Leish</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr><td>Client-first discovery</td><td><span class="cross">✗</span></td><td><span class="cross">✗</span></td><td class="leish-col"><span class="check">✓</span></td></tr>
+            <tr><td>Portfolio-driven trust</td><td><span class="partial">~</span></td><td><span class="cross">✗</span></td><td class="leish-col"><span class="check">✓</span></td></tr>
+            <tr><td>MUA business tools</td><td><span class="check">✓</span></td><td><span class="check">✓</span></td><td class="leish-col"><span class="check">✓</span></td></tr>
+            <tr><td>TikTok-native growth</td><td><span class="cross">✗</span></td><td><span class="cross">✗</span></td><td class="leish-col"><span class="check">✓</span></td></tr>
+            <tr><td>Micro-occasion focus</td><td><span class="cross">✗</span></td><td><span class="cross">✗</span></td><td class="leish-col"><span class="check">✓</span></td></tr>
+            <tr><td>Ambassador program</td><td><span class="cross">✗</span></td><td><span class="cross">✗</span></td><td class="leish-col"><span class="check">✓</span></td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- BUSINESS MODEL -->
+<section class="sw" id="model">
+  <p class="slabel">03 — Business Model</p>
+  <h2>Dual-sided value, multiple revenue streams.</h2>
+  <div class="cards">
+    <div class="card">
+      <div class="card-icon">💳</div>
+      <div class="card-title">Transaction Commission</div>
+      <div class="card-body">A percentage fee on every completed booking. As volume scales, this becomes the primary revenue engine with near-zero marginal cost per transaction.</div>
+    </div>
+    <div class="card">
+      <div class="card-icon">⭐</div>
+      <div class="card-title">MUA Premium Subscriptions</div>
+      <div class="card-body">Tiered plans give MUAs enhanced profile visibility, analytics dashboards, "Leish Verified" badge, and priority placement in client search results.</div>
+    </div>
+    <div class="card">
+      <div class="card-icon">🎯</div>
+      <div class="card-title">Featured Placements</div>
+      <div class="card-body">Promoted MUA profiles in occasion-specific search results. High-intent, low-competition ad inventory — "Wedding MUAs near you" with real booking intent.</div>
+    </div>
+    <div class="card">
+      <div class="card-icon">🤝</div>
+      <div class="card-title">Brand Partnerships</div>
+      <div class="card-body">Beauty brands feature products in MUA portfolios and booking confirmations — natively integrated, non-intrusive format with high engagement rates.</div>
+    </div>
+  </div>
+</section>
+
+<!-- GTM -->
+<section class="sw" id="gtm">
+  <p class="slabel">04 — Go-To-Market Strategy</p>
+  <h2>90-day phased launch plan.</h2>
+  <div class="two-col">
+    <div class="timeline">
+      <div class="tl-item">
+        <div class="tl-phase">Phase 1 · Days 1–30</div>
+        <div class="tl-title">Awareness</div>
+        <div class="tl-body">Post 3× per week on TikTok and Instagram Reels with real MUA portfolio transformations tagged "Found on Leish." Launch Facebook community group. Run "Book Your Glow" challenge — zero cost, organic reach.</div>
+      </div>
+      <div class="tl-item">
+        <div class="tl-phase">Phase 2 · Days 31–60</div>
+        <div class="tl-title">Consideration</div>
+        <div class="tl-body">Behind-the-scenes MUA vetting content builds trust. Introduce "Leish Verified" badge. Run Facebook/Instagram ads ($200–$300) targeting women 18–38. Hook: "Stop DMing random MUAs on Instagram."</div>
+      </div>
+      <div class="tl-item">
+        <div class="tl-phase">Phase 3 · Days 61–90</div>
+        <div class="tl-title">Conversion</div>
+        <div class="tl-body">Activate "First Booking Discount" and free consultation. Retarget website visitors. Launch referral loop — every client who brings a friend earns a perk. Drive first 100 completed bookings.</div>
+      </div>
+    </div>
+    <div>
+      <p style="font-size:10px;letter-spacing:.18em;text-transform:uppercase;color:var(--muted);margin-bottom:14px;">Channel Priority</p>
+      <div class="cards" style="grid-template-columns:1fr;">
+        <div class="card" style="padding:16px 18px;">
+          <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:5px;">
+            <div class="card-title" style="font-size:13px;">TikTok</div>
+            <span class="tag tag-red">Primary</span>
+          </div>
+          <div class="card-body">4–5× weekly. Transformations, POV bookings, Leish demos. 7–9pm local, Tue–Sat.</div>
+        </div>
+        <div class="card" style="padding:16px 18px;">
+          <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:5px;">
+            <div class="card-title" style="font-size:13px;">Instagram</div>
+            <span class="tag tag-gold">Brand</span>
+          </div>
+          <div class="card-body">Reels for discovery, Stories for engagement. Editorial aesthetic, MUA spotlights 3× weekly.</div>
+        </div>
+        <div class="card" style="padding:16px 18px;">
+          <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:5px;">
+            <div class="card-title" style="font-size:13px;">Facebook Group</div>
+            <span class="tag tag-green">Community</span>
+          </div>
+          <div class="card-body">"Find a Makeup Artist Near You" — passive referral engine targeting 25–40 demographic.</div>
+        </div>
+        <div class="card" style="padding:16px 18px;">
+          <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:5px;">
+            <div class="card-title" style="font-size:13px;">SEO City Pages</div>
+            <span class="tag tag-muted">Organic</span>
+          </div>
+          <div class="card-body">"Makeup Artist in [City]" for top 20 cities. Highest-intent organic traffic at zero ongoing cost.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- TRACTION -->
+<section class="sw" id="traction">
+  <p class="slabel">05 — Traction & KPIs</p>
+  <h2>90-day milestones.</h2>
+  <div class="mhead">
+    <div class="mhn">Metric</div>
+    <div class="mhc">30 Days</div>
+    <div class="mhc">60 Days</div>
+    <div class="mhc">90 Days</div>
+  </div>
+  <div class="mrow"><div class="mn">Social Followers</div><div class="mc">500</div><div class="mc">1,500</div><div class="mc mc-hi">3,500</div></div>
+  <div class="mrow"><div class="mn">MUA Listings</div><div class="mc">25</div><div class="mc">75</div><div class="mc mc-hi">150</div></div>
+  <div class="mrow"><div class="mn">Client Bookings</div><div class="mc">10</div><div class="mc">40</div><div class="mc mc-hi">100</div></div>
+  <div class="mrow"><div class="mn">Website Visits / mo</div><div class="mc">500</div><div class="mc">1,500</div><div class="mc mc-hi">3,000</div></div>
+  <div style="height:32px;"></div>
+  <p style="font-size:10px;letter-spacing:.18em;text-transform:uppercase;color:var(--muted);margin-bottom:16px;">Growth Levers</p>
+  <div class="cards">
+    <div class="card">
+      <div class="card-icon">🤳</div>
+      <div class="card-title">MUA Ambassador Program</div>
+      <div class="card-body">10–20 "Leish Featured Artists" promote their profile to their own beauty audiences via custom referral links. Free marketing from people with built-in followers.</div>
+    </div>
+    <div class="card">
+      <div class="card-icon">📅</div>
+      <div class="card-title">Occasion Hijacking</div>
+      <div class="card-body">Prom, wedding season, NYE, Valentine's Day — hyper-targeted content every event season. Urgency plus occasion equals high-conversion intent bookings.</div>
+    </div>
+    <div class="card">
+      <div class="card-icon">🎓</div>
+      <div class="card-title">Beauty School Partnerships</div>
+      <div class="card-body">Graduates need first clients. Leish provides the platform. Zero cost, high MUA supply volume, and organic word-of-mouth from students and their networks.</div>
+    </div>
+  </div>
+</section>
+
+<!-- ASK -->
+<section class="sw" id="ask">
+  <p class="slabel">06 — Investment Ask</p>
+  <h2>Seed round — use of funds.</h2>
+  <div class="funds-grid">
+    <div class="fund-item">
+      <div class="fund-pct" style="color:var(--accent)">40%</div>
+      <div class="fund-label">Product Development</div>
+      <div class="fund-bar" style="background:var(--accent);opacity:.7;width:40%;"></div>
+    </div>
+    <div class="fund-item">
+      <div class="fund-pct" style="color:var(--gold)">35%</div>
+      <div class="fund-label">Sales & Marketing</div>
+      <div class="fund-bar" style="background:var(--gold);opacity:.7;width:35%;"></div>
+    </div>
+    <div class="fund-item">
+      <div class="fund-pct" style="color:var(--green)">15%</div>
+      <div class="fund-label">Hiring & Team</div>
+      <div class="fund-bar" style="background:var(--green);opacity:.7;width:15%;"></div>
+    </div>
+    <div class="fund-item">
+      <div class="fund-pct" style="color:var(--muted)">10%</div>
+      <div class="fund-label">Operations & Legal</div>
+      <div class="fund-bar" style="background:var(--muted);opacity:.7;width:10%;"></div>
+    </div>
+  </div>
+  <div style="height:32px;"></div>
+  <p style="font-size:10px;letter-spacing:.18em;text-transform:uppercase;color:var(--muted);margin-bottom:14px;">Milestones Unlocked by Funding</p>
+  <div style="border:1px solid var(--border);border-radius:2px;overflow:hidden;">
+    <table class="data-table">
+      <thead><tr><th>Milestone</th><th>Timeline</th><th>Status</th></tr></thead>
+      <tbody>
+        <tr><td>Platform MVP with booking flow live</td><td>Month 1–2</td><td><span class="tag tag-gold">In Progress</span></td></tr>
+        <tr><td>150 verified MUA listings onboarded</td><td>Month 3</td><td><span class="tag tag-muted">Planned</span></td></tr>
+        <tr><td>100 client bookings completed</td><td>Month 3</td><td><span class="tag tag-muted">Planned</span></td></tr>
+        <tr><td>Payment processing end-to-end tested</td><td>Month 2</td><td><span class="tag tag-gold">In Progress</span></td></tr>
+        <tr><td>MUA ambassador program launched</td><td>Month 1</td><td><span class="tag tag-green">Ready</span></td></tr>
+        <tr><td>Series A readiness — unit economics proven</td><td>Month 9–12</td><td><span class="tag tag-muted">Target</span></td></tr>
+      </tbody>
+    </table>
+  </div>
+</section>
+
+<!-- DOCS -->
+<section class="sw" id="docs">
+  <p class="slabel">07 — Documents</p>
+  <h2>Data room documents.</h2>
+  <div class="docs-grid">
+    <a class="doc-card" href="#">
+      <div class="doc-icon">📊</div>
+      <div><div class="doc-title">Investor Proposal</div><div class="doc-meta">Go-To-Market Strategy · DOCX</div></div>
+    </a>
+    <a class="doc-card" href="#">
+      <div class="doc-icon">🖥</div>
+      <div><div class="doc-title">Core Pitch Deck</div><div class="doc-meta">14-slide investor deck · PPTX</div></div>
+    </a>
+    <a class="doc-card" href="#">
+      <div class="doc-icon">✅</div>
+      <div><div class="doc-title">Launch Checklist</div><div class="doc-meta">Non-software prep · HTML</div></div>
+    </a>
+    <a class="doc-card" href="#">
+      <div class="doc-icon">🔧</div>
+      <div><div class="doc-title">Hardware Plan</div><div class="doc-meta">Physical prep checklist · HTML</div></div>
+    </a>
+    <a class="doc-card" href="#" style="opacity:0.6;pointer-events:none;">
+      <div class="doc-icon">📈</div>
+      <div><div class="doc-title">Financial Projections</div><div class="doc-meta">3-year forecast · Coming soon</div></div>
+    </a>
+    <a class="doc-card" href="#" style="opacity:0.6;pointer-events:none;">
+      <div class="doc-icon">⚖️</div>
+      <div><div class="doc-title">Legal & Cap Table</div><div class="doc-meta">Entity structure · Coming soon</div></div>
+    </a>
+  </div>
+</section>
+
+<!-- CONTACT -->
+<section class="sw">
+  <div class="contact-block">
+    <h3>Ready to talk?</h3>
+    <p>Leish is building the first beauty marketplace designed for the client.<br>We'd love to walk you through the platform and answer your questions.</p>
+    <a class="cta-btn" href="/cdn-cgi/l/email-protection#f8909d949497b8949d918b90d69b97">Request a meeting →</a>
+  </div>
+</section>
+
+<footer>
+  <span>© 2025 Leish Beauty Marketplace</span>
+  <span>Confidential · Seed Stage · For Investor Use Only</span>
+</footer>
+
+<script>
+  function toggleTheme() {
+    const html = document.documentElement;
+    const isDark = html.getAttribute('data-theme') === 'dark';
+    html.setAttribute('data-theme', isDark ? 'light' : 'dark');
+    document.getElementById('themeIcon').textContent  = isDark ? '🌙' : '☀️';
+    document.getElementById('themeLabel').textContent = isDark ? 'Dark' : 'Light';
+    try { localStorage.setItem('leish-theme', isDark ? 'light' : 'dark'); } catch(e){}
+  }
+  (function() {
+    try {
+      const saved = localStorage.getItem('leish-theme');
+      if (saved === 'dark') {
+        document.documentElement.setAttribute('data-theme', 'dark');
+        window.addEventListener('DOMContentLoaded', function() {
+          var icon  = document.getElementById('themeIcon');
+          var label = document.getElementById('themeLabel');
+          if (icon)  icon.textContent  = '☀️';
+          if (label) label.textContent = 'Light';
+        });
+      }
+    } catch(e){}
+  })();
+</script>
+</body>
+</html>
